@@ -95,6 +95,26 @@
       return steps;
     }
 
+    const VOICE_LINES = { prep:"준비하세요", inhale:"들이쉬세요", hold:"멈추세요",
+      exhale:"내쉬세요", done:"다 됐어요. 편히 주무세요" };
+    let koVoice = null;
+    function pickKoreanVoice() {
+      const vs = speechSynthesis.getVoices();
+      koVoice = vs.find(v => v.lang && v.lang.toLowerCase().startsWith("ko")) || null;
+    }
+    if ("speechSynthesis" in window) {
+      pickKoreanVoice();
+      speechSynthesis.onvoiceschanged = pickKoreanVoice;
+    }
+    function speak(text) {
+      if (!("speechSynthesis" in window)) return;
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "ko-KR"; if (koVoice) u.voice = koVoice;
+      u.rate = 0.92; u.pitch = 1.0;
+      speechSynthesis.speak(u);
+    }
+
     function showSession() { $("start-screen").classList.remove("active"); $("session-screen").classList.add("active"); }
     function showStart()   { $("session-screen").classList.remove("active"); $("start-screen").classList.add("active"); }
 
@@ -103,6 +123,7 @@
       const total = schedule[schedule.length-1].cycleIndex;
       const done = step.phase === "done" ? total : step.cycleIndex;
       $("cycle-dots").textContent = "●".repeat(done) + "○".repeat(Math.max(0, total - done));
+      if (VOICE_LINES[step.phase]) speak(VOICE_LINES[step.phase]);
     }
 
     function runSession(schedule, onPhase, onDone) {
