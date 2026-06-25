@@ -149,6 +149,18 @@
       noiseNode = null;
     }
 
+    function chime() {
+      const ctx = getAudioCtx();
+      const osc = ctx.createOscillator(); const g = ctx.createGain();
+      osc.type = "sine"; osc.frequency.value = 528;
+      const t = ctx.currentTime;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.12, t + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+      osc.connect(g).connect(ctx.destination);
+      osc.start(t); osc.stop(t + 1);
+    }
+
     function showSession() { $("start-screen").classList.remove("active"); $("session-screen").classList.add("active"); }
     function showStart()   { $("session-screen").classList.remove("active"); $("start-screen").classList.add("active"); }
 
@@ -157,6 +169,7 @@
       const total = schedule[schedule.length-1].cycleIndex;
       const done = step.phase === "done" ? total : step.cycleIndex;
       $("cycle-dots").textContent = "●".repeat(done) + "○".repeat(Math.max(0, total - done));
+      if (step.phase === "inhale" || step.phase === "hold" || step.phase === "exhale") chime();
       if (VOICE_LINES[step.phase]) speak(VOICE_LINES[step.phase]);
     }
 
