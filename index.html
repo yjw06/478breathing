@@ -19,7 +19,7 @@
     .field input { width:90px; font-size:24px; text-align:center; background:#0d1016;
       color:var(--fg); border:1px solid #1c2230; border-radius:12px; padding:12px; }
     #start-btn { margin-top:40px; width:100%; padding:22px; font-size:22px; letter-spacing:.2em;
-      background:#10141c; color:var(--accent); border:1px solid #1c2230; border-radius:18px; }
+      background:#10141c; color:var(--accent); border:1px solid #1c2230; border-radius:18px; cursor:pointer; }
     #notice { margin-top:24px; font-size:13px; color:var(--fg-dim); line-height:1.6; }
     #phase-label { font-size:34px; font-weight:300; color:var(--fg); letter-spacing:.2em;
       opacity:.55; transition:opacity .6s; }
@@ -33,7 +33,7 @@
     <label class="field">멈춤 (초) <input id="hold" type="number" min="0" max="30" inputmode="numeric"></label>
     <label class="field">날숨 (초) <input id="exhale" type="number" min="1" max="30" inputmode="numeric"></label>
     <label class="field">반복 (회) <input id="cycles" type="number" min="1" max="20" inputmode="numeric"></label>
-    <button id="start-btn">시작</button>
+    <button id="start-btn" type="button">시작</button>
     <p id="notice">세션 중 화면이 꺼지면 소리가 멈춥니다.<br>설정 › 디스플레이 › 자동 잠금을 길게 두세요.</p>
   </main>
 
@@ -65,7 +65,7 @@
       try { return clampSettings(JSON.parse(localStorage.getItem(KEY)) || {}); }
       catch { return { ...DEFAULTS }; }
     }
-    function saveSettings(s) { localStorage.setItem(KEY, JSON.stringify(clampSettings(s))); }
+    function saveSettings(s) { try { localStorage.setItem(KEY, JSON.stringify(clampSettings(s))); } catch {} }
 
     const $ = (id) => document.getElementById(id);
     function readInputs() {
@@ -199,16 +199,17 @@
       showSession();
       startNoise();
       const schedule = buildSchedule(s);
-      stopCurrent = runSession(schedule, renderPhase, endSession);
+      stopCurrent = runSession(schedule, renderPhase, () => endSession(false));
     }
-    function endSession() {
+    function endSession(cancelVoice = true) {
+      if (cancelVoice && "speechSynthesis" in window) speechSynthesis.cancel();
       stopNoise();
       if (stopCurrent) { stopCurrent(); stopCurrent = null; }
       showStart();
     }
 
     $("start-btn").addEventListener("click", startSession);
-    $("session-screen").addEventListener("click", endSession);
+    $("session-screen").addEventListener("click", () => endSession(true));
   </script>
 </body>
 </html>
