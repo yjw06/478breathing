@@ -115,6 +115,40 @@
       speechSynthesis.speak(u);
     }
 
+    let audioCtx = null, noiseNode = null, noiseGain = null;
+    function getAudioCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      return audioCtx;
+    }
+    function startNoise() {
+      const ctx = getAudioCtx();
+      const bufferSize = 2 * ctx.sampleRate;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      let last = 0;
+      for (let i = 0; i < bufferSize; i++) {           // brown noise
+        const white = Math.random() * 2 - 1;
+        last = (last + 0.02 * white) / 1.02; data[i] = last * 3.5;
+      }
+      noiseNode = ctx.createBufferSource(); noiseNode.buffer = buffer; noiseNode.loop = true;
+      const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 500;
+      noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0, ctx.currentTime);
+      noiseGain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 1.5); // gentle fade-in
+      noiseNode.connect(lp).connect(noiseGain).connect(ctx.destination);
+      noiseNode.start();
+    }
+    function stopNoise() {
+      if (!noiseNode || !audioCtx) return;
+      const t = audioCtx.currentTime;
+      noiseGain.gain.cancelScheduledValues(t);
+      noiseGain.gain.setValueAtTime(noiseGain.gain.value, t);
+      noiseGain.gain.linearRampToValueAtTime(0, t + 1);
+      const n = noiseNode; setTimeout(() => { try { n.stop(); } catch {} }, 1100);
+      noiseNode = null;
+    }
+
     function showSession() { $("start-screen").classList.remove("active"); $("session-screen").classList.add("active"); }
     function showStart()   { $("session-screen").classList.remove("active"); $("start-screen").classList.add("active"); }
 
@@ -150,10 +184,12 @@
     function startSession() {
       const s = readInputs(); saveSettings(s);
       showSession();
+      startNoise();
       const schedule = buildSchedule(s);
       stopCurrent = runSession(schedule, renderPhase, endSession);
     }
     function endSession() {
+      stopNoise();
       if (stopCurrent) { stopCurrent(); stopCurrent = null; }
       showStart();
     }
