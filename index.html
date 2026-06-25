@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>378 호흡</title>
+  <style>
+    :root { --bg:#05070a; --fg:#7d8794; --fg-dim:#3a414c; --accent:#5a6b82; }
+    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body { margin:0; height:100%; background:var(--bg); color:var(--fg);
+      font-family:-apple-system,system-ui,sans-serif; overflow:hidden; }
+    body { display:flex; align-items:center; justify-content:center; }
+    .screen { display:none; width:100%; max-width:560px; padding:32px; text-align:center; }
+    .screen.active { display:block; }
+    h1 { font-weight:300; letter-spacing:.3em; font-size:20px; color:var(--accent); margin:0 0 40px; }
+    .field { display:flex; align-items:center; justify-content:space-between;
+      font-size:20px; padding:14px 4px; }
+    .field input { width:90px; font-size:24px; text-align:center; background:#0d1016;
+      color:var(--fg); border:1px solid #1c2230; border-radius:12px; padding:12px; }
+    #start-btn { margin-top:40px; width:100%; padding:22px; font-size:22px; letter-spacing:.2em;
+      background:#10141c; color:var(--accent); border:1px solid #1c2230; border-radius:18px; }
+    #notice { margin-top:24px; font-size:13px; color:var(--fg-dim); line-height:1.6; }
+    #phase-label { font-size:34px; font-weight:300; color:var(--fg); letter-spacing:.2em;
+      opacity:.55; transition:opacity .6s; }
+    #cycle-dots { margin-top:28px; font-size:20px; color:var(--fg-dim); letter-spacing:.4em; }
+  </style>
+</head>
+<body>
+  <main id="start-screen" class="screen active">
+    <h1>378 호흡</h1>
+    <label class="field">들숨 (초) <input id="inhale" type="number" min="1" max="20" inputmode="numeric"></label>
+    <label class="field">멈춤 (초) <input id="hold" type="number" min="0" max="30" inputmode="numeric"></label>
+    <label class="field">날숨 (초) <input id="exhale" type="number" min="1" max="30" inputmode="numeric"></label>
+    <label class="field">반복 (회) <input id="cycles" type="number" min="1" max="20" inputmode="numeric"></label>
+    <button id="start-btn">시작</button>
+    <p id="notice">세션 중 화면이 꺼지면 소리가 멈춥니다.<br>설정 › 디스플레이 › 자동 잠금을 길게 두세요.</p>
+  </main>
+
+  <main id="session-screen" class="screen">
+    <div id="phase-label">준비</div>
+    <div id="cycle-dots"></div>
+  </main>
+
+  <script>
+    "use strict";
+    // 이후 태스크에서 채움
+  </script>
+</body>
+</html>
