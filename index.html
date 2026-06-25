@@ -83,6 +83,17 @@
     ["inhale","hold","exhale","cycles"].forEach((id) =>
       $(id).addEventListener("change", () => { const s = readInputs(); fillInputs(s); saveSettings(s); })
     );
+
+    function buildSchedule(s) {
+      const steps = [{ phase:"prep", label:"준비", durationMs:3000, cycleIndex:0 }];
+      for (let c = 0; c < s.cycles; c++) {
+        steps.push({ phase:"inhale", label:"들이쉬기", durationMs:s.inhale*1000, cycleIndex:c });
+        if (s.hold > 0) steps.push({ phase:"hold", label:"멈추기", durationMs:s.hold*1000, cycleIndex:c });
+        steps.push({ phase:"exhale", label:"내쉬기", durationMs:s.exhale*1000, cycleIndex:c });
+      }
+      steps.push({ phase:"done", label:"완료", durationMs:0, cycleIndex:s.cycles });
+      return steps;
+    }
   </script>
 </body>
 </html>
