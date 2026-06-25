@@ -94,6 +94,51 @@
       steps.push({ phase:"done", label:"완료", durationMs:0, cycleIndex:s.cycles });
       return steps;
     }
+
+    function showSession() { $("start-screen").classList.remove("active"); $("session-screen").classList.add("active"); }
+    function showStart()   { $("session-screen").classList.remove("active"); $("start-screen").classList.add("active"); }
+
+    function renderPhase(step, schedule) {
+      $("phase-label").textContent = step.label;
+      const total = schedule[schedule.length-1].cycleIndex;
+      const done = step.phase === "done" ? total : step.cycleIndex;
+      $("cycle-dots").textContent = "●".repeat(done) + "○".repeat(Math.max(0, total - done));
+    }
+
+    function runSession(schedule, onPhase, onDone) {
+      let i = 0, timer = null, stopped = false;
+      function next() {
+        if (stopped) return;
+        if (i >= schedule.length) { onDone(); return; }
+        const step = schedule[i++];
+        onPhase(step, schedule);
+        if (step.phase === "done") { onDone(); return; }
+        const dueAt = performance.now() + step.durationMs;
+        (function tick() {
+          if (stopped) return;
+          const remaining = dueAt - performance.now();
+          if (remaining <= 0) next();
+          else timer = setTimeout(tick, Math.min(remaining, 200));
+        })();
+      }
+      next();
+      return function stop() { stopped = true; if (timer) clearTimeout(timer); };
+    }
+
+    let stopCurrent = null;
+    function startSession() {
+      const s = readInputs(); saveSettings(s);
+      showSession();
+      const schedule = buildSchedule(s);
+      stopCurrent = runSession(schedule, renderPhase, endSession);
+    }
+    function endSession() {
+      if (stopCurrent) { stopCurrent(); stopCurrent = null; }
+      showStart();
+    }
+
+    $("start-btn").addEventListener("click", startSession);
+    $("session-screen").addEventListener("click", endSession);
   </script>
 </body>
 </html>
