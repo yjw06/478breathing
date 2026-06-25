@@ -44,7 +44,45 @@
 
   <script>
     "use strict";
-    // 이후 태스크에서 채움
+
+    const DEFAULTS = { inhale:4, hold:7, exhale:8, cycles:4 };
+    const KEY = "breath378.settings";
+
+    function clampSettings(s) {
+      const n = (v, min, max, def) => {
+        const x = Math.round(Number(v));
+        return Number.isFinite(x) ? Math.min(max, Math.max(min, x)) : def;
+      };
+      return {
+        inhale: n(s.inhale, 1, 20, DEFAULTS.inhale),
+        hold:   n(s.hold,   0, 30, DEFAULTS.hold),
+        exhale: n(s.exhale, 1, 30, DEFAULTS.exhale),
+        cycles: n(s.cycles, 1, 20, DEFAULTS.cycles),
+      };
+    }
+
+    function loadSettings() {
+      try { return clampSettings(JSON.parse(localStorage.getItem(KEY)) || {}); }
+      catch { return { ...DEFAULTS }; }
+    }
+    function saveSettings(s) { localStorage.setItem(KEY, JSON.stringify(clampSettings(s))); }
+
+    const $ = (id) => document.getElementById(id);
+    function readInputs() {
+      return clampSettings({
+        inhale: $("inhale").value, hold: $("hold").value,
+        exhale: $("exhale").value, cycles: $("cycles").value,
+      });
+    }
+    function fillInputs(s) {
+      $("inhale").value = s.inhale; $("hold").value = s.hold;
+      $("exhale").value = s.exhale; $("cycles").value = s.cycles;
+    }
+
+    fillInputs(loadSettings());
+    ["inhale","hold","exhale","cycles"].forEach((id) =>
+      $(id).addEventListener("change", () => { const s = readInputs(); fillInputs(s); saveSettings(s); })
+    );
   </script>
 </body>
 </html>
