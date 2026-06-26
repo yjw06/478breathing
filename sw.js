@@ -1,8 +1,9 @@
 // 478 호흡 — 오프라인 캐시 (앱 셸 cache-first)
-const CACHE = "breath478-v1";
+const CACHE = "breath478-v2";
 const ASSETS = [
   "./",
   "./index.html",
+  "./styles.css",
   "./manifest.webmanifest",
   "./icon-180.png",
   "./icon-192.png",

@@ -1,0 +1,107 @@
+/* 478 호흡 — 다크 미니멀 / 뉴모피즘 (수면용) */
+:root {
+  --bg:#05070a; --fg:#8b95a6; --fg-soft:#5b6577; --fg-dim:#3a414c;
+  --accent:#7e88b8; --accent-hi:#aeb6da;
+  --surface:#0c1118; --surface-hi:#121826; --line:#161c28;
+  --r-md:14px; --r-lg:18px; --r-pill:999px;
+  --gap:8px;
+  --ease:cubic-bezier(.4,0,.2,1);
+  --shadow-raised: 6px 6px 16px rgba(0,0,0,.55), -4px -4px 12px rgba(46,56,76,.10);
+  --shadow-inset: inset 4px 4px 10px rgba(0,0,0,.6), inset -3px -3px 8px rgba(46,56,76,.10);
+  --shadow-input: inset 2px 2px 5px rgba(0,0,0,.55), inset -2px -2px 5px rgba(46,56,76,.16);
+}
+
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { margin:0; min-height:100%; color:var(--fg);
+  font-family:-apple-system,system-ui,sans-serif; -webkit-font-smoothing:antialiased;
+  background:radial-gradient(125% 90% at 50% 0%, #0a0f17 0%, var(--bg) 62%); }
+body { min-height:100dvh; display:flex; overflow-x:hidden; overflow-y:auto; touch-action:manipulation;
+  transition:background 1.2s var(--ease); }
+body.running { background:radial-gradient(120% 85% at 50% 0%, #070b11 0%, #04050a 60%); }
+
+/* ── 레이아웃 ── */
+.app { flex:1; display:grid; grid-template-columns:1fr; align-content:center; justify-items:center;
+  gap:28px; width:100%; max-width:900px; margin:0 auto;
+  padding:max(28px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
+          max(28px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); }
+.app > section { animation:fadeIn .5s ease both; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+/* ── 컨트롤(좌측) ── */
+#controls { width:100%; max-width:420px; }
+/* 세션 중 자동 딤: 설정 영역만 어둡게, 정지 버튼은 밝게 유지 */
+.brand, .presets, .settings { transition:opacity 1s var(--ease); }
+body.running .brand, body.running .presets, body.running .settings { opacity:.28; }
+
+.brand { text-align:center; margin-bottom:22px; }
+h1 { font-weight:300; letter-spacing:.42em; font-size:19px; color:var(--accent); margin:0 0 6px; padding-left:.42em; }
+.subtitle { margin:0; font-size:12px; letter-spacing:.3em; color:var(--fg-dim); }
+
+/* 프리셋 칩 */
+.presets { display:flex; flex-wrap:wrap; gap:var(--gap); justify-content:center; margin-bottom:24px; }
+.preset { min-height:44px; padding:0 16px; border-radius:var(--r-pill);
+  background:var(--surface); border:1px solid var(--line); color:var(--fg-soft);
+  font-size:13px; letter-spacing:.06em; cursor:pointer;
+  transition:color .2s, border-color .2s, background .2s; }
+.preset:hover { color:var(--fg); }
+.preset[aria-pressed="true"] { color:var(--accent-hi); border-color:var(--accent);
+  background:linear-gradient(145deg, var(--surface-hi), var(--surface)); }
+.preset:focus-visible { outline:none; box-shadow:0 0 0 3px rgba(126,136,184,.3); }
+
+/* 설정 행 + 스텝퍼 */
+.settings { display:flex; flex-direction:column; gap:4px; }
+.row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:6px 2px; }
+.row .name { font-size:15px; letter-spacing:.04em; color:var(--fg); }
+.stepper { display:flex; align-items:center; gap:var(--gap); }
+.step-btn { width:44px; height:44px; flex:none; border-radius:var(--r-md);
+  background:linear-gradient(145deg, var(--surface-hi), var(--surface));
+  border:1px solid var(--line); color:var(--accent); font-size:22px; line-height:1; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:var(--shadow-raised); transition:transform .12s, box-shadow .2s, color .2s; }
+.step-btn:hover { color:var(--accent-hi); }
+.step-btn:active { transform:translateY(1px); box-shadow:var(--shadow-inset); }
+.step-btn:focus-visible { outline:none; box-shadow:0 0 0 3px rgba(126,136,184,.3); }
+.step-val { min-width:48px; text-align:center; font-size:23px; font-weight:300; color:var(--fg);
+  font-variant-numeric:tabular-nums; }
+.step-unit { width:18px; font-size:12px; color:var(--fg-dim); text-align:left; }
+
+/* 메인 버튼 */
+#go-btn { margin-top:28px; width:100%; min-height:56px; padding:18px; font-size:19px;
+  letter-spacing:.28em; padding-left:.28em; color:var(--accent);
+  border:1px solid var(--line); border-radius:var(--r-lg); cursor:pointer;
+  background:linear-gradient(145deg, var(--surface-hi), var(--surface)); box-shadow:var(--shadow-raised);
+  transition:transform .15s, box-shadow .2s, color .2s; }
+#go-btn:hover { color:var(--accent-hi); }
+#go-btn:active { transform:translateY(1px); box-shadow:var(--shadow-inset); }
+#go-btn:focus-visible { outline:none; box-shadow:0 0 0 3px rgba(126,136,184,.32), var(--shadow-raised); }
+
+/* ── 스테이지(우측) ── */
+#stage { display:flex; flex-direction:column; align-items:center; justify-content:center;
+  transition:opacity 1s var(--ease); }
+body.running #stage { opacity:.95; }
+#breath-stage { position:relative; width:240px; height:240px; display:flex; align-items:center; justify-content:center; }
+#breath-circle { position:absolute; inset:20px; border-radius:50%;
+  background:radial-gradient(circle at 50% 35%, #161d2b 0%, #090d14 72%);
+  box-shadow: inset 0 1px 1px rgba(150,165,210,.06),
+              0 20px 60px -16px rgba(96,116,170,.45),
+              0 0 70px -12px rgba(96,116,170,.28);
+  transform:scale(.72); transition:transform 1000ms cubic-bezier(.4,0,.5,1); will-change:transform; }
+#phase-count { position:relative; z-index:1; font-size:56px; font-weight:200; color:var(--fg);
+  letter-spacing:.06em; font-variant-numeric:tabular-nums; opacity:.9; min-height:64px; }
+#phase-label { margin-top:22px; font-size:22px; font-weight:300; color:var(--fg);
+  letter-spacing:.3em; padding-left:.3em; opacity:.62; transition:opacity .6s; }
+#time-left { margin-top:10px; font-size:17px; color:var(--fg-dim); letter-spacing:.2em;
+  font-variant-numeric:tabular-nums; min-height:22px; }
+
+/* ── 와이드/가로: 좌우 2분할 ── */
+@media (min-width:720px) {
+  body { overflow:hidden; }
+  .app { grid-template-columns:minmax(280px,360px) 1fr; align-content:center; align-items:center;
+    justify-items:stretch; gap:44px; }
+  #controls { justify-self:start; max-width:360px; }
+  #stage { justify-self:center; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  *, *::before, *::after { animation-duration:.001ms !important; transition-duration:.001ms !important; }
+}
