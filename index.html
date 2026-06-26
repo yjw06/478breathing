@@ -2,51 +2,117 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <title>378 호흡</title>
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="478 호흡" />
+  <meta name="theme-color" content="#05070a" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./icon-180.png" />
+  <link rel="icon" type="image/png" href="./icon-192.png" />
+  <title>478 호흡</title>
   <style>
-    :root { --bg:#05070a; --fg:#7d8794; --fg-dim:#3a414c; --accent:#5a6b82; }
+    :root {
+      --bg:#05070a; --fg:#8b95a6; --fg-dim:#3a414c; --accent:#7e88b8;
+      --surface:#0c1118; --surface-hi:#121826; --line:#161c28;
+      --r-md:14px; --r-lg:18px;
+    }
     * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-    html,body { margin:0; height:100%; background:var(--bg); color:var(--fg);
-      font-family:-apple-system,system-ui,sans-serif; overflow:hidden; }
-    body { display:flex; align-items:center; justify-content:center; }
-    .screen { display:none; width:100%; max-width:560px; padding:32px; text-align:center; }
-    .screen.active { display:block; }
-    h1 { font-weight:300; letter-spacing:.3em; font-size:20px; color:var(--accent); margin:0 0 40px; }
+    html,body { margin:0; min-height:100%; color:var(--fg);
+      font-family:-apple-system,system-ui,sans-serif; overflow:hidden;
+      background:radial-gradient(125% 90% at 50% 0%, #0a0f17 0%, var(--bg) 62%); }
+    body { display:flex; align-items:center; justify-content:center; min-height:100dvh;
+      touch-action:manipulation; }
+
+    .screen { display:none; width:100%; max-width:560px; text-align:center;
+      padding:max(32px, env(safe-area-inset-top)) 28px max(32px, env(safe-area-inset-bottom)); }
+    .screen.active { display:block; animation:fadeIn .5s ease both; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+    h1 { font-weight:300; letter-spacing:.42em; font-size:19px; color:var(--accent);
+      margin:0 0 6px; padding-left:.42em; }
+    .subtitle { margin:0 0 40px; font-size:12px; letter-spacing:.3em; color:var(--fg-dim); }
+
     .field { display:flex; align-items:center; justify-content:space-between;
-      font-size:20px; padding:14px 4px; }
-    .field input { width:90px; font-size:24px; text-align:center; background:#0d1016;
-      color:var(--fg); border:1px solid #1c2230; border-radius:12px; padding:12px; }
-    #start-btn { margin-top:40px; width:100%; padding:22px; font-size:22px; letter-spacing:.2em;
-      background:#10141c; color:var(--accent); border:1px solid #1c2230; border-radius:18px; cursor:pointer; }
-    #notice { margin-top:24px; font-size:13px; color:var(--fg-dim); line-height:1.6; }
-    #phase-label { font-size:34px; font-weight:300; color:var(--fg); letter-spacing:.2em;
-      opacity:.55; transition:opacity .6s; }
-    #cycle-dots { margin-top:28px; font-size:20px; color:var(--fg-dim); letter-spacing:.4em; }
+      font-size:17px; letter-spacing:.04em; padding:12px 6px; }
+    input[type=number] { -moz-appearance:textfield; }
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+    .field input { width:96px; font-size:22px; text-align:center;
+      background:var(--surface); color:var(--fg);
+      border:1px solid var(--line); border-radius:var(--r-md); padding:12px;
+      box-shadow: inset 2px 2px 5px rgba(0,0,0,.55), inset -2px -2px 5px rgba(46,56,76,.16);
+      transition: box-shadow .2s ease, border-color .2s ease; }
+    .field input:focus-visible { outline:none; border-color:var(--accent);
+      box-shadow: inset 2px 2px 5px rgba(0,0,0,.55), 0 0 0 3px rgba(126,136,184,.28); }
+
+    #start-btn { margin-top:36px; width:100%; padding:20px; font-size:20px; letter-spacing:.28em;
+      color:var(--accent); border:1px solid var(--line); border-radius:var(--r-lg); cursor:pointer;
+      padding-left:.28em; background:linear-gradient(145deg, var(--surface-hi), var(--surface));
+      box-shadow: 6px 6px 16px rgba(0,0,0,.55), -4px -4px 12px rgba(46,56,76,.10);
+      transition: transform .15s ease, box-shadow .2s ease, color .2s ease; }
+    #start-btn:hover { color:#aeb6da; }
+    #start-btn:active { transform:translateY(1px);
+      box-shadow: inset 4px 4px 10px rgba(0,0,0,.6), inset -3px -3px 8px rgba(46,56,76,.10); }
+    #start-btn:focus-visible { outline:none;
+      box-shadow: 0 0 0 3px rgba(126,136,184,.32), 6px 6px 16px rgba(0,0,0,.55); }
+
+    #notice { margin-top:22px; font-size:12.5px; color:var(--fg-dim); line-height:1.7; }
+
+    /* ── 세션 화면 ── */
+    #breath-stage { position:relative; width:240px; height:240px; margin:0 auto;
+      display:flex; align-items:center; justify-content:center; }
+    #breath-circle { position:absolute; top:50%; left:50%; width:200px; height:200px;
+      margin:-100px 0 0 -100px; border-radius:50%;
+      background:radial-gradient(circle at 50% 35%, #161d2b 0%, #090d14 72%);
+      box-shadow: inset 0 1px 1px rgba(150,165,210,.06),
+                  0 20px 60px -16px rgba(96,116,170,.45),
+                  0 0 70px -12px rgba(96,116,170,.28);
+      transform:scale(.58);
+      transition: transform 1000ms cubic-bezier(.4,0,.5,1);
+      will-change:transform; }
+    #phase-count { position:relative; z-index:1; font-size:56px; font-weight:200;
+      color:var(--fg); letter-spacing:.06em; font-variant-numeric:tabular-nums; opacity:.9; }
+    #phase-label { margin-top:24px; font-size:24px; font-weight:300; color:var(--fg);
+      letter-spacing:.3em; padding-left:.3em; opacity:.62; transition:opacity .6s; }
+    #time-left { margin-top:12px; font-size:18px; color:var(--fg-dim); letter-spacing:.2em;
+      font-variant-numeric:tabular-nums; }
+    #stop-hint { margin-top:34px; font-size:11.5px; letter-spacing:.18em; color:var(--fg-dim); opacity:.7; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration:.001ms !important; transition-duration:.001ms !important; }
+      #breath-circle { transition:none !important; }
+    }
   </style>
 </head>
 <body>
   <main id="start-screen" class="screen active">
-    <h1>378 호흡</h1>
+    <h1>478 호흡</h1>
+    <p class="subtitle">4 · 7 · 8 BREATHING</p>
     <label class="field">들숨 (초) <input id="inhale" type="number" min="1" max="20" inputmode="numeric"></label>
     <label class="field">멈춤 (초) <input id="hold" type="number" min="0" max="30" inputmode="numeric"></label>
     <label class="field">날숨 (초) <input id="exhale" type="number" min="1" max="30" inputmode="numeric"></label>
-    <label class="field">반복 (회) <input id="cycles" type="number" min="1" max="20" inputmode="numeric"></label>
+    <label class="field">시간 (분) <input id="minutes" type="number" min="1" max="60" inputmode="numeric"></label>
     <button id="start-btn" type="button">시작</button>
     <p id="notice">세션 중 화면이 꺼지면 소리가 멈춥니다.<br>설정 › 디스플레이 › 자동 잠금을 길게 두세요.</p>
   </main>
 
-  <main id="session-screen" class="screen">
-    <div id="phase-label">준비</div>
-    <div id="cycle-dots"></div>
+  <main id="session-screen" class="screen" role="button" tabindex="0" aria-label="탭하면 세션 종료">
+    <div id="breath-stage">
+      <div id="breath-circle" aria-hidden="true"></div>
+      <div id="phase-count" aria-hidden="true"></div>
+    </div>
+    <div id="phase-label" aria-live="polite">준비</div>
+    <div id="time-left" aria-live="off"></div>
+    <div id="stop-hint">화면을 누르면 종료</div>
   </main>
 
   <script>
     "use strict";
 
-    const DEFAULTS = { inhale:4, hold:7, exhale:8, cycles:4 };
-    const KEY = "breath378.settings";
+    const DEFAULTS = { inhale:4, hold:7, exhale:8, minutes:5 };
+    const KEY = "breath478.settings";
 
     function clampSettings(s) {
       const n = (v, min, max, def) => {
@@ -57,7 +123,7 @@
         inhale: n(s.inhale, 1, 20, DEFAULTS.inhale),
         hold:   n(s.hold,   0, 30, DEFAULTS.hold),
         exhale: n(s.exhale, 1, 30, DEFAULTS.exhale),
-        cycles: n(s.cycles, 1, 20, DEFAULTS.cycles),
+        minutes: n(s.minutes, 1, 60, DEFAULTS.minutes),
       };
     }
 
@@ -71,48 +137,30 @@
     function readInputs() {
       return clampSettings({
         inhale: $("inhale").value, hold: $("hold").value,
-        exhale: $("exhale").value, cycles: $("cycles").value,
+        exhale: $("exhale").value, minutes: $("minutes").value,
       });
     }
     function fillInputs(s) {
       $("inhale").value = s.inhale; $("hold").value = s.hold;
-      $("exhale").value = s.exhale; $("cycles").value = s.cycles;
+      $("exhale").value = s.exhale; $("minutes").value = s.minutes;
     }
 
     fillInputs(loadSettings());
-    ["inhale","hold","exhale","cycles"].forEach((id) =>
+    ["inhale","hold","exhale","minutes"].forEach((id) =>
       $(id).addEventListener("change", () => { const s = readInputs(); fillInputs(s); saveSettings(s); })
     );
 
     function buildSchedule(s) {
+      const cycleSec = s.inhale + s.hold + s.exhale;          // 한 호흡 주기 길이
+      const cycles = Math.max(1, Math.round(s.minutes * 60 / cycleSec)); // 시간에 맞춰 횟수 계산
       const steps = [{ phase:"prep", label:"준비", durationMs:3000, cycleIndex:0 }];
-      for (let c = 0; c < s.cycles; c++) {
+      for (let c = 0; c < cycles; c++) {
         steps.push({ phase:"inhale", label:"들이쉬기", durationMs:s.inhale*1000, cycleIndex:c });
         if (s.hold > 0) steps.push({ phase:"hold", label:"멈추기", durationMs:s.hold*1000, cycleIndex:c });
         steps.push({ phase:"exhale", label:"내쉬기", durationMs:s.exhale*1000, cycleIndex:c });
       }
-      steps.push({ phase:"done", label:"완료", durationMs:0, cycleIndex:s.cycles });
+      steps.push({ phase:"done", label:"완료", durationMs:0, cycleIndex:cycles });
       return steps;
-    }
-
-    const VOICE_LINES = { prep:"준비하세요", inhale:"들이쉬세요", hold:"멈추세요",
-      exhale:"내쉬세요", done:"다 됐어요. 편히 주무세요" };
-    let koVoice = null;
-    function pickKoreanVoice() {
-      const vs = speechSynthesis.getVoices();
-      koVoice = vs.find(v => v.lang && v.lang.toLowerCase().startsWith("ko")) || null;
-    }
-    if ("speechSynthesis" in window) {
-      pickKoreanVoice();
-      speechSynthesis.onvoiceschanged = pickKoreanVoice;
-    }
-    function speak(text) {
-      if (!("speechSynthesis" in window)) return;
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = "ko-KR"; if (koVoice) u.voice = koVoice;
-      u.rate = 0.92; u.pitch = 1.0;
-      speechSynthesis.speak(u);
     }
 
     let audioCtx = null, noiseNode = null, noiseGain = null;
@@ -149,28 +197,103 @@
       noiseNode = null;
     }
 
-    function chime() {
+    // 부드러운 사인음 한 번 — 단계별로 음높이가 글라이드한다 (말소리 대체)
+    function tone(freqStart, freqEnd, dur, peak = 0.08) {
       const ctx = getAudioCtx();
       const osc = ctx.createOscillator(); const g = ctx.createGain();
-      osc.type = "sine"; osc.frequency.value = 528;
+      osc.type = "sine";
       const t = ctx.currentTime;
+      osc.frequency.setValueAtTime(freqStart, t);
+      if (freqEnd !== freqStart) osc.frequency.linearRampToValueAtTime(freqEnd, t + dur);
       g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.12, t + 0.05);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+      g.gain.linearRampToValueAtTime(peak, t + Math.min(0.18, dur * 0.35)); // 부드러운 어택
+      g.gain.linearRampToValueAtTime(0.0001, t + dur);                      // 부드러운 릴리즈
       osc.connect(g).connect(ctx.destination);
-      osc.start(t); osc.stop(t + 1);
+      osc.start(t); osc.stop(t + dur + 0.05);
+    }
+
+    const PHASE_TONES = {
+      prep:   () => tone(330, 330, 0.6, 0.06),
+      inhale: () => tone(294, 392, 0.7),       // 낮게 차오르는 음
+      hold:   () => tone(392, 392, 0.4, 0.045), // 아주 약한 단음
+      exhale: () => tone(392, 262, 0.9),       // 천천히 떨어지는 음
+    };
+    function doneTone() {                        // 잔잔한 마무리 (하행 해결)
+      tone(392, 330, 0.8, 0.06);
+      setTimeout(() => tone(330, 262, 1.2, 0.06), 480);
     }
 
     function showSession() { $("start-screen").classList.remove("active"); $("session-screen").classList.add("active"); }
     function showStart()   { $("session-screen").classList.remove("active"); $("start-screen").classList.add("active"); }
 
-    function renderPhase(step, schedule) {
+    let phaseTimer = null;
+    function startPhaseCount(step) {
+      stopPhaseCount();
+      const el = $("phase-count");
+      const total = Math.round(step.durationMs / 1000);
+      const counted = step.phase === "inhale" || step.phase === "hold" || step.phase === "exhale";
+      if (!counted || total < 1) { el.textContent = ""; return; }
+      let n = 1;
+      el.textContent = n;                       // 단계 시작 = 1
+      phaseTimer = setInterval(() => {
+        n++;
+        if (n > total) { stopPhaseCount(); return; }
+        el.textContent = n;
+      }, 1000);
+    }
+    function stopPhaseCount() {
+      if (phaseTimer) { clearInterval(phaseTimer); phaseTimer = null; }
+    }
+
+    // 호흡 가이드 원: 들숨에 커지고 멈춤에 유지, 날숨에 작아진다 (transform만 사용)
+    const BREATH_MIN = 0.58, BREATH_MAX = 1.0, BREATH_MID = 0.8;
+    const BREATH_TARGET = { inhale:BREATH_MAX, hold:BREATH_MAX, exhale:BREATH_MIN,
+      prep:BREATH_MID, done:BREATH_MID };
+    function setBreathVisual(step) {
+      const c = $("breath-circle");
+      const target = BREATH_TARGET[step.phase];
+      if (target == null) return;
+      const dur = step.phase === "hold" ? 200
+        : step.phase === "prep" ? 1000
+        : step.phase === "done" ? 1200
+        : step.durationMs;
+      c.style.transitionDuration = dur + "ms";
+      void c.offsetWidth;                         // 같은 속성 연속 전환 재시작
+      c.style.transform = "scale(" + target + ")";
+    }
+    function resetBreath() {
+      const c = $("breath-circle");
+      c.style.transitionDuration = "0ms";
+      c.style.transform = "scale(" + BREATH_MIN + ")";
+      void c.offsetWidth;
+    }
+
+    function renderPhase(step) {
       $("phase-label").textContent = step.label;
-      const total = schedule[schedule.length-1].cycleIndex;
-      const done = step.phase === "done" ? total : step.cycleIndex;
-      $("cycle-dots").textContent = "●".repeat(done) + "○".repeat(Math.max(0, total - done));
-      if (step.phase === "inhale" || step.phase === "hold" || step.phase === "exhale") chime();
-      if (VOICE_LINES[step.phase]) speak(VOICE_LINES[step.phase]);
+      setBreathVisual(step);
+      startPhaseCount(step);
+      if (step.phase === "done") doneTone();
+      else if (PHASE_TONES[step.phase]) PHASE_TONES[step.phase]();
+    }
+
+    function fmtTime(ms) {
+      const s = Math.max(0, Math.ceil(ms / 1000));
+      return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+    }
+    let countdownTimer = null;
+    function startCountdown(schedule) {
+      const totalMs = schedule.reduce((sum, st) => sum + st.durationMs, 0);
+      const endAt = performance.now() + totalMs;
+      const el = $("time-left");
+      el.textContent = fmtTime(totalMs);
+      countdownTimer = setInterval(() => {
+        const remaining = endAt - performance.now();
+        el.textContent = fmtTime(remaining);
+        if (remaining <= 0) stopCountdown();
+      }, 250);
+    }
+    function stopCountdown() {
+      if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
     }
 
     function runSession(schedule, onPhase, onDone) {
@@ -197,19 +320,32 @@
     function startSession() {
       const s = readInputs(); saveSettings(s);
       showSession();
+      resetBreath();
       startNoise();
       const schedule = buildSchedule(s);
-      stopCurrent = runSession(schedule, renderPhase, () => endSession(false));
+      startCountdown(schedule);
+      stopCurrent = runSession(schedule, renderPhase, endSession);
     }
-    function endSession(cancelVoice = true) {
-      if (cancelVoice && "speechSynthesis" in window) speechSynthesis.cancel();
+    function endSession() {
+      stopCountdown();
+      stopPhaseCount();
       stopNoise();
       if (stopCurrent) { stopCurrent(); stopCurrent = null; }
       showStart();
     }
 
     $("start-btn").addEventListener("click", startSession);
-    $("session-screen").addEventListener("click", () => endSession(true));
+    $("session-screen").addEventListener("click", endSession);
+    $("session-screen").addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); endSession(); }
+    });
+
+    // 오프라인 지원 (HTTPS에서만 등록됨)
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
+    }
   </script>
 </body>
 </html>
