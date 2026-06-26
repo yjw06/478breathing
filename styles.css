@@ -93,13 +93,25 @@ body.running #stage { opacity:.95; }
 #time-left { margin-top:10px; font-size:17px; color:var(--fg-dim); letter-spacing:.2em;
   font-variant-numeric:tabular-nums; min-height:22px; }
 
-/* ── 와이드/가로: 좌우 2분할 ── */
+/* ── 와이드/가로: 고정 좌측 사이드바 ── */
 @media (min-width:720px) {
   body { overflow:hidden; }
-  .app { grid-template-columns:minmax(280px,360px) 1fr; align-content:center; align-items:center;
-    justify-items:stretch; gap:44px; }
-  #controls { justify-self:start; max-width:360px; }
-  #stage { justify-self:center; }
+  .app { grid-template-columns:300px 1fr; gap:0; max-width:none; margin:0;
+    align-content:stretch; align-items:stretch; justify-items:stretch; padding:0; min-height:100dvh; }
+
+  /* 사이드바 */
+  #controls { max-width:none; height:100dvh; display:flex; flex-direction:column;
+    background:linear-gradient(180deg, #0a0e16 0%, #070a10 100%);
+    border-right:1px solid var(--line);
+    box-shadow:8px 0 30px -12px rgba(0,0,0,.6);
+    padding:max(26px, env(safe-area-inset-top)) 22px max(26px, env(safe-area-inset-bottom))
+            max(22px, env(safe-area-inset-left)); }
+  #controls .brand { margin-top:4px; }
+  #controls .settings { margin-top:4px; }
+  #controls #go-btn { margin-top:auto; }   /* 시작 버튼을 사이드바 하단에 고정 */
+
+  /* 메인 호흡 영역 */
+  #stage { height:100dvh; justify-self:center; align-self:center; }
 }
 
 @media (prefers-reduced-motion:reduce) {
